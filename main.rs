@@ -5,17 +5,13 @@ struct Usuario {
     data_nascimento: String,
     cpf: String,
     endereco: String,
+    saldo: f64,
 }
 
 struct Conta<'a> {
     agencia: &'a str,
     numero_conta: usize,
     usuario: &'a Usuario,
-}
-
-struct Transacao {
-    valor: f64,
-    tipo: String,
 }
 
 impl<'a> Conta<'a> {
@@ -119,7 +115,10 @@ fn main() {
                 println!("Informe o valor do depósito: ");
                 let mut valor = String::new();
                 io::stdin().read_line(&mut valor).expect("Failed to read line");
-                let valor: f64 = valor.trim().parse().expect("Please enter a number");
+                let valor: f64 = valor.trim().parse().unwrap_or_else(|_| {
+                    println!("Por favor, insira um valor numérico válido.");
+                    0.0
+                });
 
                 if let Some(conta) = contas.first_mut() {
                     conta.depositar(valor, &mut extrato);
@@ -131,7 +130,10 @@ fn main() {
                 println!("Informe o valor do saque: ");
                 let mut valor = String::new();
                 io::stdin().read_line(&mut valor).expect("Failed to read line");
-                let valor: f64 = valor.trim().parse().expect("Please enter a number");
+                let valor: f64 = valor.trim().parse().unwrap_or_else(|_| {
+                    println!("Por favor, insira um valor numérico válido.");
+                    0.0
+                });
 
                 if let Some(conta) = contas.first_mut() {
                     conta.sacar(valor, &mut extrato, limite, &mut numero_saques, limite_saques);
@@ -170,6 +172,7 @@ fn main() {
                         data_nascimento,
                         cpf,
                         endereco,
+                        saldo: 0.0,
                     });
 
                     println!("=== Usuário criado com sucesso! ===");
@@ -189,4 +192,3 @@ fn main() {
         }
     }
 }
-
